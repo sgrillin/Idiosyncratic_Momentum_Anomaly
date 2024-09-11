@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # Download SPX stocks from Yahoo Finance and calculate monthly returns
 sp500 = pd.read_html('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')
 sp500_list = np.array(sp500[0]['Symbol'])
-start_date = '2013-12-01'
+start_date = '2003-12-01'
 
 df = pd.DataFrame(columns=sp500_list)
 for i in df.columns:
@@ -145,7 +145,6 @@ summary_stats['Mean'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].mean() * 
 summary_stats['Std Dev'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].std() * np.sqrt(12)  # Multiply by sqrt(12) to annualize
 rf_annualized = combined_data['RF'].mean() * 12  # Annualize the risk-free rate
 summary_stats['Sharpe Ratio'] = (summary_stats['Mean'] - rf_annualized) / summary_stats['Std Dev']
-summary_stats
 
 # Calculate cumulative returns for WML, Mkt-RF, SMB, and HML
 wml_cum_returns = (1 + wml_returns).cumprod() - 1
