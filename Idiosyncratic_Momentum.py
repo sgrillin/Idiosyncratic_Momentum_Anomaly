@@ -127,6 +127,10 @@ for i in momentum_scores.index:
 # Summary statistics and graph the performances of the WML and other factors
 # Step 1: Align the dates for both WML and Fama-French factors
 wml_returns = wml_returns.dropna(axis=0)
+wml_returns.index = wml_returns.index.to_period('M').strftime('%Y-%m')
+
+
+
 common_dates = wml_returns.index.intersection(factors.index)
 wml_returns = wml_returns.loc[common_dates]
 factors = factors.loc[common_dates]
@@ -144,6 +148,10 @@ summary_stats['Mean'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].mean() * 
 summary_stats['Std Dev'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].std() * np.sqrt(12)
 rf_annualized = combined_data['RF'].mean() * 12  # Annualize the risk-free rate
 summary_stats['Sharpe Ratio'] = (summary_stats['Mean'] - rf_annualized) / summary_stats['Std Dev']
+
+factors_aug = factors.merge(wml_returns, left_index=True, right_index=True)
+factors_aug['WML'] = pd.to_numeric(factors_aug['WML'], errors='coerce')
+factors_aug.corr()
 
 # Calculate cumulative returns for WML, Mkt-RF, SMB, and HML
 wml_cum_returns = (1 + wml_returns).cumprod() - 1
