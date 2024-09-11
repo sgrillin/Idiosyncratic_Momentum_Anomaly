@@ -1,4 +1,3 @@
-import backtrader as bt
 import pandas as pd
 import numpy as np
 import yfinance as yf
@@ -141,8 +140,8 @@ combined_data = pd.DataFrame({
     'RF': factors['RF']
 })
 summary_stats = pd.DataFrame()
-summary_stats['Mean'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].mean() * 12  # Multiply by 12 to annualize
-summary_stats['Std Dev'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].std() * np.sqrt(12)  # Multiply by sqrt(12) to annualize
+summary_stats['Mean'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].mean() * 12
+summary_stats['Std Dev'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].std() * np.sqrt(12)
 rf_annualized = combined_data['RF'].mean() * 12  # Annualize the risk-free rate
 summary_stats['Sharpe Ratio'] = (summary_stats['Mean'] - rf_annualized) / summary_stats['Std Dev']
 
@@ -155,7 +154,8 @@ hml_cum_returns = (1 + factors['HML']).cumprod() - 1
 # Step 3: Plot WML and Fama-French 3 factors on the same graph
 plt.figure(figsize=(10, 6))
 plt.plot(wml_cum_returns.index, wml_cum_returns.values, label='WML (iMOM)', color='blue', linewidth=2)
-plt.plot(mkt_rf_cum_returns.index, mkt_rf_cum_returns.values, label='Mkt-RF', color='red', linestyle='--', linewidth=1.5)
+plt.plot(mkt_rf_cum_returns.index, mkt_rf_cum_returns.values,
+         label='Mkt-RF', color='red', linestyle='--', linewidth=1.5)
 plt.plot(smb_cum_returns.index, smb_cum_returns.values, label='SMB', color='green', linestyle='--', linewidth=1.5)
 plt.plot(hml_cum_returns.index, hml_cum_returns.values, label='HML', color='orange', linestyle='--', linewidth=1.5)
 
@@ -167,90 +167,3 @@ plt.legend()
 
 # Show plot
 plt.show()
-
-# Convert the index of wml_returns to DatetimeIndex
-wml_returns.index = pd.to_datetime(wml_returns.index, format='%Y-%m')
-
-# Backtrader Strategy
-class WMLStrategy(bt.Strategy):
-    params = dict(
-        lookback=1,  # Lookback period for the strategy (1 month)
-        printlog=False  # Whether to print log information
-    )
-
-    def __init__(self):
-        # Keep track of WML factor in the strategy
-        self.wml = self.datas[0].close
-
-    def next(self):
-        # Simple long-short strategy based on WML factor
-        if self.wml[0] > 0:  # If WML is positive, go long
-            self.order_target_percent(target=1.0)  # Allocate 100% of portfolio to this
-        elif self.wml[0] < 0:  # If WML is negative, go short
-            self.order_target_percent(target=-1.0)  # Allocate 100% of portfolio to short
-        else:
-            self.order_target_percent(target=0)  # Exit all positions if WML is zero
-
-    def log(self, txt, dt=None):
-        ''' Logging function for this strategy '''
-        dt = dt or self.datas[0].datetime.date(0)
-        if self.params.printlog:
-            print(f'{dt.isoformat()} {txt}')
-
-    def stop(self):
-        ''' Called at the end of the backtest '''
-        if self.params.printlog:
-            print(f'Ending Value: {self.broker.getvalue():.2f}')
-
-# Step 1: Prepare WML data for Backtrader
-# Ensure WML data is in the correct format for Backtrader
-wml_bt_data = bt.feeds.PandasData(dataname=wml_returns)
-
-# Step 2: Create a Cerebro engine
-cerebro = bt.Cerebro()
-
-# Add the WML data feed
-cerebro.adddata(wml_bt_data)
-
-# Add the WMLStrategy to the engine
-cerebro.addstrategy(WMLStrategy)
-
-# Set the starting cash for the portfolio
-cerebro.broker.set_cash(1000000)  # Starting with $1 million
-
-# Set broker commission (optional, but realistic)
-cerebro.broker.setcommission(commission=0.001)  # 0.1% commission per trade
-
-# Step 3: Run the backtest
-print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.run()
-print('Ending Portfolio Value: %.2f' % cerebro.broker.getvalue())
-
-# Step 4: Plot the result
-cerebro.plot()
-
-# Ensure WML data is in the correct format for Backtrader
-wml_bt_data = bt.feeds.PandasData(dataname=wml_returns)
-
-# Step 2: Create a Cerebro engine
-cerebro = bt.Cerebro()
-
-# Add the WML data feed
-cerebro.adddata(wml_bt_data)
-
-# Add the WMLStrategy to the engine
-cerebro.addstrategy(WMLStrategy)
-
-# Set the starting cash for the portfolio
-cerebro.broker.set_cash(1000000)  # Starting with $1 million
-
-# Set broker commission (optional, but realistic)
-cerebro.broker.setcommission(commission=0.001)  # 0.1% commission per trade
-
-# Step 3: Run the backtest
-print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.run()
-print('Ending Portfolio Value: %.2f' % cerebro.broker.getvalue())
-
-# Step 4: Plot the result
-cerebro.plot()
