@@ -40,3 +40,42 @@ You can install the necessary libraries using:
 
 ```bash
 pip install pandas numpy yfinance statsmodels matplotlib joblib getFamaFrenchFactors
+```
+## Running the Code
+Clone this repository:
+```bash
+git clone https://github.com/sgrillin/Idiosyncratic_Momentum_Anomaly.git
+```
+
+Open the project folder and run the main Python script to replicate the results from the paper:
+```bash
+python idiosyncratic_momentum.py
+```
+
+The script will:
+- Download historical stock prices from Yahoo Finance for the S&P 500.
+- Compute the idiosyncratic returns based on the Fama-French 3 factors.
+- Create the momentum score and build the WML factor.
+- Plot the cumulative returns of the WML factor and compare them with the Fama-French factors.
+
+## Results
+The results include:
+
+- Cumulative Returns Plot: A visualization of the cumulative returns for the WML factor versus the Fama-French 3 factors.
+- Sharpe Ratio and Summary Statistics: A table displaying the mean, standard deviation, and Sharpe ratio for the WML factor and the Fama-French factors.
+
+## References
+@article{blitz2020idiosyncratic,
+  title={The idiosyncratic momentum anomaly},
+  author={Blitz, David and Hanauer, Matthias X and Vidojevic, Milan},
+  journal={International Review of Economics \& Finance},
+  volume={69},
+  pages={932--957},
+  year={2020},
+  publisher={Elsevier}
+}
+
+https://www.sciencedirect.com/science/article/abs/pii/S1059056020300927
+
+## Contributions
+Feel free to submit a pull request if you'd like to contribute to improving the code or adding new features.
