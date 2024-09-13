@@ -65,7 +65,7 @@ The results include:
 - Sharpe Ratio and Summary Statistics: A table displaying the mean, standard deviation, and Sharpe ratio for the WML factor and the Fama-French factors.
 
 ## References
-Blitz, David, Matthias X. Hanauer, and Milan Vidojevic. "The idiosyncratic momentum anomaly." International Review of Economics & Finance 69 (2020): 932-957.
+Blitz, David, Hanauer, Matthias, and Vidojevic, Milan. "The idiosyncratic momentum anomaly." International Review of Economics & Finance 69 (2020): 932-957.
 
 https://www.sciencedirect.com/science/article/abs/pii/S1059056020300927
 
