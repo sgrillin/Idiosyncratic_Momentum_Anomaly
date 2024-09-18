@@ -129,8 +129,6 @@ for i in momentum_scores.index:
 wml_returns = wml_returns.dropna(axis=0)
 wml_returns.index = wml_returns.index.to_period('M').strftime('%Y-%m')
 
-
-
 common_dates = wml_returns.index.intersection(factors.index)
 wml_returns = wml_returns.loc[common_dates]
 factors = factors.loc[common_dates]
