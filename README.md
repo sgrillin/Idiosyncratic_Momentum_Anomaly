@@ -1,6 +1,6 @@
 # Idiosyncratic Momentum Anomaly
 
-This repository contains Python code that replicates the idiosyncratic momentum factor by Blitz et al. (2020), *"The Idiosyncratic Momentum Anomaly."* The paper explores the idiosyncratic momentum factor and its impact on stock performance, building on existing research on momentum strategies.
+This repository contains Python code that replicates the construction of the idiosyncratic momentum factor by Blitz et al. (2020), *"The Idiosyncratic Momentum Anomaly."* The paper explores the idiosyncratic momentum factor and its impact on stock performance, building on existing research on momentum strategies.
 
 ## Overview
 
