@@ -127,7 +127,6 @@ for i in momentum_scores.index:
 # Summary statistics and graph the performances of the WML and other factors
 # Step 1: Align the dates for both WML and Fama-French factors
 wml_returns = wml_returns.dropna(axis=0)
-wml_returns.index = wml_returns.index.to_period('M').strftime('%Y-%m')
 
 common_dates = wml_returns.index.intersection(factors.index)
 wml_returns = wml_returns.loc[common_dates]
