@@ -59,7 +59,6 @@ momentum['date'] = pd.to_datetime(momentum['date']).dt.to_period('M').astype(str
 momentum = momentum.set_index('date')
 momentum = momentum[start_date[:7]:]  # Slicing by 'YYYY-MM'
 
-
 # Align the indices of stock_returns and factors
 common_dates = stock_returns.index.intersection(factors.index)
 stock_returns = stock_returns.loc[common_dates]
