@@ -51,9 +51,14 @@ five_factors = gff.famaFrench5Factor(frequency='m')
 five_factors = five_factors.rename(columns={'date_ff_factors': 'date'})
 five_factors['date'] = pd.to_datetime(five_factors['date']).dt.to_period('M').astype(str)
 five_factors = five_factors.set_index('date')
-five_factors = five_factors[start_date[:7]:]  # Slicing by 'YYYY-MM'
+momentumfive_factors = five_factors[start_date[:7]:]  # Slicing by 'YYYY-MM'
 
-momentum
+momentum = gff.momentumFactor(frequency='m')
+momentum = momentum.rename(columns={'date_ff_factors': 'date'})
+momentum['date'] = pd.to_datetime(momentum['date']).dt.to_period('M').astype(str)
+momentum = momentum.set_index('date')
+momentum = momentum[start_date[:7]:]  # Slicing by 'YYYY-MM'
+
 
 # Align the indices of stock_returns and factors
 common_dates = stock_returns.index.intersection(factors.index)
