@@ -46,6 +46,15 @@ factors['date'] = pd.to_datetime(factors['date']).dt.to_period('M').astype(str)
 factors = factors.set_index('date')
 factors = factors[start_date[:7]:]  # Slicing by 'YYYY-MM'
 
+# Download Fama French 5 factors model and Carhart momemntum for factor spanning tests
+five_factors = gff.famaFrench5Factor(frequency='m')
+five_factors = five_factors.rename(columns={'date_ff_factors': 'date'})
+five_factors['date'] = pd.to_datetime(five_factors['date']).dt.to_period('M').astype(str)
+five_factors = five_factors.set_index('date')
+five_factors = five_factors[start_date[:7]:]  # Slicing by 'YYYY-MM'
+
+momentum
+
 # Align the indices of stock_returns and factors
 common_dates = stock_returns.index.intersection(factors.index)
 stock_returns = stock_returns.loc[common_dates]
