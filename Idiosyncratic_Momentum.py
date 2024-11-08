@@ -39,25 +39,21 @@ monthly_df.index = monthly_df.index.to_period('M').strftime('%Y-%m')
 # Calculate monthly returns as the log difference
 stock_returns = np.log(monthly_df / monthly_df.shift(1)).dropna()
 
-# Download Fama and French Factors with Monthly frequency from Kenneth French Website
-factors = gff.famaFrench3Factor(frequency='m')
-factors = factors.rename(columns={'date_ff_factors': 'date'})
-factors['date'] = pd.to_datetime(factors['date']).dt.to_period('M').astype(str)
-factors = factors.set_index('date')
-factors = factors[start_date[:7]:]  # Slicing by 'YYYY-MM'
-
-# Download Fama French 5 factors model and Carhart momemntum for factor spanning tests
+# Download Fama French 5 factors model and Carhart momentum for factor spanning tests
 five_factors = gff.famaFrench5Factor(frequency='m')
 five_factors = five_factors.rename(columns={'date_ff_factors': 'date'})
 five_factors['date'] = pd.to_datetime(five_factors['date']).dt.to_period('M').astype(str)
 five_factors = five_factors.set_index('date')
-momentumfive_factors = five_factors[start_date[:7]:]  # Slicing by 'YYYY-MM'
+five_factors = five_factors[start_date[:7]:]  # Slicing by 'YYYY-MM'
 
 momentum = gff.momentumFactor(frequency='m')
 momentum = momentum.rename(columns={'date_ff_factors': 'date'})
 momentum['date'] = pd.to_datetime(momentum['date']).dt.to_period('M').astype(str)
 momentum = momentum.set_index('date')
 momentum = momentum[start_date[:7]:]  # Slicing by 'YYYY-MM'
+
+# Download Fama French Factors with Monthly frequency from Kenneth French Website
+factors = five_factors[['Mkt-RF', 'SMB', 'HML', 'RF']]
 
 # Align the indices of stock_returns and factors
 common_dates = stock_returns.index.intersection(factors.index)
