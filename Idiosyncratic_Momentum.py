@@ -59,6 +59,7 @@ factors = five_factors[['Mkt-RF', 'SMB', 'HML', 'RF']]
 common_dates = stock_returns.index.intersection(factors.index)
 stock_returns = stock_returns.loc[common_dates]
 factors = factors.loc[common_dates]
+momentum = momentum.loc[common_dates]
 
 # Initialize DataFrame to store residuals (idiosyncratic returns)
 idio_returns = pd.DataFrame(index=stock_returns.index, columns=stock_returns.columns)
@@ -171,13 +172,18 @@ wml_cum_returns = (1 + wml_returns).cumprod() - 1
 mkt_rf_cum_returns = (1 + factors['Mkt-RF']).cumprod() - 1
 smb_cum_returns = (1 + factors['SMB']).cumprod() - 1
 hml_cum_returns = (1 + factors['HML']).cumprod() - 1
-mom_cum_returns = (1 + momentum['MOM']).cumprod() - 1
+mom_cum_returns = (1 + momentum).cumprod() - 1
 
 # Step 2: Plot idiosyncratic and total return momentum
 plt.figure(figsize=(10, 6))
 plt.plot(wml_cum_returns.index, wml_cum_returns.values, label='WML (iMOM)', color='blue', linewidth=2)
-plt.plot(wml_cum_returns.index, wml_cum_returns.values, label='WML (iMOM)', color='blue', linewidth=2)
-
+plt.plot(mom_cum_returns.index, mom_cum_returns.values, label='MOM', color='orange', linewidth=2)
+plt.title('Cumulative Returns: WML (iMOM) vs Total Return Momentum')
+plt.xlabel('Date')
+plt.ylabel('Cumulative Returns')
+plt.legend()
+# Show plot
+plt.show()
 
 # Step 3: Plot WML and Fama-French 3 factors on the same graph
 plt.figure(figsize=(10, 6))
