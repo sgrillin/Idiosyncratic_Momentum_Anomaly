@@ -60,7 +60,6 @@ common_dates = stock_returns.index.intersection(factors.index)
 stock_returns = stock_returns.loc[common_dates]
 factors = factors.loc[common_dates]
 
-# Calculate idiosyncratic returns
 # Initialize DataFrame to store residuals (idiosyncratic returns)
 idio_returns = pd.DataFrame(index=stock_returns.index, columns=stock_returns.columns)
 
@@ -106,37 +105,43 @@ for stock, residuals_series in idio_returns.items():
             else:
                 momentum_scores.iloc[i, momentum_scores.columns.get_loc(stock)] = np.nan
 
-# Initialize DataFrame to store WML factor returns
-wml_returns = pd.DataFrame(index=stock_returns.index, columns=["WML"])
+# Drop rows (months) with all NaN values in momentum_scores
+momentum_scores = momentum_scores.dropna(how='all')
+# Initialize DataFrames to store decile portfolio returns and WML returns
+decile_returns = pd.DataFrame(index=momentum_scores.index, columns=range(1, 11))
+wml_returns = pd.DataFrame(index=momentum_scores.index, columns=["WML"])
 
-# Loop over each month in momentum_scores.index to calculate the WML factor
+# Loop over each month in momentum_scores.index to calculate decile portfolio returns
 for i in momentum_scores.index:
     # Get the iMOM rankings for the current month
     current_month = i
-    rankings = momentum_scores.loc[current_month].rank()
+    rankings = momentum_scores.loc[current_month].dropna().rank()  # Drop NaN values for individual stocks
 
-    # Top decile (Winners): Stocks with the highest momentum scores (top 10%)
-    top_decile = rankings[rankings > rankings.quantile(0.9)]
+    # Divide rankings into 10 deciles
+    deciles = pd.qcut(rankings, 10, labels=False) + 1  # Deciles from 1 (lowest) to 10 (highest)
 
-    # Bottom decile (Losers): Stocks with the lowest momentum scores (bottom 10%)
-    bottom_decile = rankings[rankings < rankings.quantile(0.1)]
+    # Calculate returns for each decile
+    for decile in range(1, 11):
+        decile_stocks = rankings.index[deciles == decile]
+        decile_stocks = decile_stocks[decile_stocks.isin(stock_returns.columns)]  # Ensure alignment with stock returns
 
-    # Ensure top_decile and bottom_decile are aligned with stock_returns columns
-    top_decile = top_decile[top_decile.index.isin(stock_returns.columns)]
-    bottom_decile = bottom_decile[bottom_decile.index.isin(stock_returns.columns)]
+        # Calculate mean return for the decile in the current month
+        decile_return = stock_returns.loc[current_month, decile_stocks].mean()
+        decile_returns.loc[current_month, decile] = decile_return
 
-    # Calculate returns for the current month
-    long_returns = stock_returns.loc[current_month, top_decile.index].mean()
-    short_returns = stock_returns.loc[current_month, bottom_decile.index].mean()
+# Calculate the WML (long top decile, short bottom decile) outside the loop
+wml_returns["WML"] = decile_returns[10] - decile_returns[1]
 
-    # Calculate WML (long top decile, short bottom decile)
-    wml_returns.loc[current_month, "WML"] = long_returns - short_returns
-
+# Performances of decile portfolios
+decile_portfolios = pd.DataFrame(index=decile_returns.columns)
+decile_portfolios['Mean'] = decile_returns.mean(axis=0) * 12
+decile_portfolios['Std Dev'] = decile_returns.std(axis=0) * np.sqrt(12)
+rf_annualized = factors['RF'].mean() * 12  # Annualize the risk-free rate needs adjustment
+decile_portfolios['Sharpe Ratio'] = (decile_portfolios['Mean'] - rf_annualized) / decile_portfolios['Std Dev']
 
 # Summary statistics and graph the performances of the WML and other factors
 # Step 1: Align the dates for both WML and Fama-French factors
 wml_returns = wml_returns.dropna(axis=0)
-
 common_dates = wml_returns.index.intersection(factors.index)
 wml_returns = wml_returns.loc[common_dates]
 factors = factors.loc[common_dates]
@@ -147,23 +152,32 @@ combined_data = pd.DataFrame({
     'Mkt-RF': factors['Mkt-RF'],
     'SMB': factors['SMB'],
     'HML': factors['HML'],
+    'MOM': momentum['MOM'],
     'RF': factors['RF']
 })
 summary_stats = pd.DataFrame()
-summary_stats['Mean'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].mean() * 12
-summary_stats['Std Dev'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML']].std() * np.sqrt(12)
+summary_stats['Mean'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML', 'MOM']].mean() * 12
+summary_stats['Std Dev'] = combined_data[['WML', 'Mkt-RF', 'SMB', 'HML', 'MOM']].std() * np.sqrt(12)
 rf_annualized = combined_data['RF'].mean() * 12  # Annualize the risk-free rate
 summary_stats['Sharpe Ratio'] = (summary_stats['Mean'] - rf_annualized) / summary_stats['Std Dev']
 
-factors_aug = factors.merge(wml_returns, left_index=True, right_index=True)
+factors_aug = factors.merge(momentum, left_index=True, right_index=True)
+factors_aug = factors_aug.merge(wml_returns, left_index=True, right_index=True)
 factors_aug['WML'] = pd.to_numeric(factors_aug['WML'], errors='coerce')
 factors_aug.corr()
 
-# Calculate cumulative returns for WML, Mkt-RF, SMB, and HML
+# Calculate cumulative returns for WML, Mkt-RF, SMB, HML and MOM
 wml_cum_returns = (1 + wml_returns).cumprod() - 1
 mkt_rf_cum_returns = (1 + factors['Mkt-RF']).cumprod() - 1
 smb_cum_returns = (1 + factors['SMB']).cumprod() - 1
 hml_cum_returns = (1 + factors['HML']).cumprod() - 1
+mom_cum_returns = (1 + momentum['MOM']).cumprod() - 1
+
+# Step 2: Plot idiosyncratic and total return momentum
+plt.figure(figsize=(10, 6))
+plt.plot(wml_cum_returns.index, wml_cum_returns.values, label='WML (iMOM)', color='blue', linewidth=2)
+plt.plot(wml_cum_returns.index, wml_cum_returns.values, label='WML (iMOM)', color='blue', linewidth=2)
+
 
 # Step 3: Plot WML and Fama-French 3 factors on the same graph
 plt.figure(figsize=(10, 6))
