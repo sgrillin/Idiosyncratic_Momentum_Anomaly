@@ -12,15 +12,16 @@ This project replicates the following aspects from the paper:
 - Calculating **idiosyncratic returns** by running rolling regressions on the Fama-French 3 factors.
 - Creating a **momentum score** for each stock based on idiosyncratic returns.
 - Constructing a **WML (Winner Minus Loser)** factor by going long on the top decile of stocks and short on the bottom decile.
-- Comparing the performance of the WML factor with the **Fama-French 3 factors** (Mkt-RF, SMB, HML).
+- Comparing the performance of the WML factor with the **Fama-French 3 factors** (Mkt-RF, SMB, HML) and **momentum factor (MOM)**.
 
 ## Key Features
 
 - **Data Download**: Uses Yahoo Finance to download historical stock price data for the S&P 500.
 - **Rolling Regressions**: Performs rolling regressions over a 36-month window to calculate idiosyncratic returns.
 - **Momentum Score**: Calculates the momentum score for each stock based on the past 12 months' idiosyncratic returns.
-- **Performance Comparison**: Compares the cumulative returns of the WML factor with the Fama-French factors (Mkt-RF, SMB, HML).
-- **Plotting**: Visualizes the cumulative returns for the WML factor and the Fama-French factors.
+- **Decile Portfolios**: Constructs 10 decile portfolios based on momentum scores and calculates the long-short WML factor.
+- **Performance Comparison**: Compares the cumulative returns of the WML factor with the Fama-French factors (Mkt-RF, SMB, HML) and the MOM (total return momentum factor).
+- **Plotting**: Visualizes the cumulative returns for the WML factor, Fama-French factors, and the MOM factor.
 
 ## Setup
 
@@ -37,6 +38,7 @@ To run the code, ensure you have the following Python libraries installed:
 - `getFamaFrenchFactors` (for downloading Fama-French factors)
 
 You can install the necessary libraries using:
+
 
 ```bash
 pip install pandas numpy yfinance statsmodels matplotlib joblib getFamaFrenchFactors
@@ -55,14 +57,15 @@ python idiosyncratic_momentum.py
 The script will:
 - Download historical stock prices from Yahoo Finance for the S&P 500.
 - Compute the idiosyncratic returns based on the Fama-French 3 factors.
-- Create the momentum score and build the WML factor.
-- Plot the cumulative returns of the WML factor and compare them with the Fama-French factors.
+- Create the momentum score and build the WML factor using decile portfolios.
+- Plot the cumulative returns of the WML factor and compare them with the Fama-French factors and MOM factor.
 
 ## Results
 The results include:
 
-- Cumulative Returns Plot: A visualization of the cumulative returns for the WML factor versus the Fama-French 3 factors.
-- Sharpe Ratio and Summary Statistics: A table displaying the mean, standard deviation, and Sharpe ratio for the WML factor and the Fama-French factors.
+- Cumulative Returns Plot: A visualization of the cumulative returns for the WML factor versus the Fama-French 3 factors and the MOM factor.
+- Sharpe Ratio and Summary Statistics: A table displaying the mean, standard deviation, and Sharpe ratio for the WML factor, the Fama-French 3 factors, and the MOM factor.
+- Decile Portfolio Performance: Displays the annualized mean, standard deviation, and Sharpe ratio for each decile portfolio.
 
 ## References
 Blitz, David, Hanauer, Matthias, and Vidojevic, Milan. "The idiosyncratic momentum anomaly." International Review of Economics & Finance 69 (2020): 932-957.
