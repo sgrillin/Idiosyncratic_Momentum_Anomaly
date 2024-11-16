@@ -67,6 +67,20 @@ The results include:
 - Sharpe Ratio and Summary Statistics: A table displaying the mean, standard deviation, and Sharpe ratio for the WML factor, the Fama-French 3 factors, and the MOM factor.
 - Decile Portfolio Performance: Displays the annualized mean, standard deviation, and Sharpe ratio for each decile portfolio.
 
+```bash
+           Mean   Std Dev  Sharpe Ratio
+WML     0.000938  0.126122     -0.086936
+Mkt-RF  0.100897  0.162790      0.546682
+SMB    -0.004754  0.095162     -0.175041
+HML    -0.021817  0.117579     -0.286786
+MOM     0.012106  0.150911      0.001346
+```
+
+![image](https://github.com/user-attachments/assets/7d4093fe-ee39-4eaa-9cdb-74e3b473f55c)
+
+![image](https://github.com/user-attachments/assets/fb9c32ae-44cd-4232-b2f1-99fe082420b5)
+
+
 ## References
 Blitz, David, Hanauer, Matthias, and Vidojevic, Milan. "The idiosyncratic momentum anomaly." International Review of Economics & Finance 69 (2020): 932-957.
 
